@@ -7,16 +7,24 @@
 #include "tasks.h"
 #include "kernel.h"
 #include "config_timer.h"
+#include "semaphore.h"
+
+// Variáveis globais
+sem_t controle;
 
 void main(void) {
-    
-    nJavOS_start();  
-    nJavOS_init_timer();
-    
-    // Cria as tarefas
-    nJavOS_task_create(1, 10, task_one);
-    nJavOS_task_create(1, 10, task_two);
   
-    while (1);
-    return;
+  nJavOS_start();
+  nJavOS_init_timer();
+  
+ 
+  sem_init(&controle, 1);
+  
+  // Cria as tarefas
+  nJavOS_task_create(1, 10, task_one);
+  nJavOS_task_create(2, 10, task_two);
+  
+  while (1);
+
+  return;
 }

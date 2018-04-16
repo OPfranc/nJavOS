@@ -7,7 +7,6 @@
 #include "scheduler.h"
 #include "config.h"
 #include "types.h"
-#include "timer.h"
 
 // Variáveis globais
 ready_Queue_t Ready_Queue;
@@ -38,19 +37,6 @@ void nJavOS_start()
   Ready_Queue.task_READY[Ready_Queue.tasks_installed].task_ptr   = idle;
   
   Ready_Queue.tasks_installed++;
-  
-  T0CONbits.T0SE = 0;             // falling edge selected
-  T0CONbits.T0CS = 0;             // Internal clock selected (timer mode ON)
-  T0CONbits.PSA = 1;              // Prescalar NOT assigned
-  T0CONbits.TMR0ON = 1;           // Turn ON the timer
-  
-  TRISDbits.RD0 = 0;
-  TRISDbits.RD1 = 0;
-  TRISDbits.RD2 = 0;
-  
-  PORTDbits.RD0 = 0;
-  PORTDbits.RD1 = 0;
-  PORTDbits.RD2 = 0;
 }
 
 void nJavOS_task_create(u_int id, u_int prior, task_ptr_t ptr_f)
@@ -89,20 +75,17 @@ void nJavOS_dispatcher(state_t state)
   // Salva o contexto da tarefa em execução
   SAVE_CONTEXT();
   // Escolha a próxima tarefa que será executada
-    if(RR_SCHEDULER)
-    {
-        next_task_to_run = rr_scheduler();
-    }
-    else
-    {
-        next_task_to_run = priority_scheduler();
-    } 
+#if RR_SCHEDULER
+  next_task_to_run = rr_scheduler();
+#else
+  next_task_to_run = priority_scheduler();
+#endif
+  
   // Informa qual será a próxima tarefa a ser executada
   Ready_Queue.task_running = next_task_to_run;
   
   // Restaura o contexto da tarefa que será executada  
   RESTORE_CONTEXT();
   
-  ENABLE_GLOBAL_INTERRUPTS(); 
+  ENABLE_GLOBAL_INTERRUPTS();
 }
- 

@@ -1,8 +1,6 @@
-/* 
- * File:   config_timer.h
- * Author: teabr
- *
- * Created on 9 de Abril de 2018, 15:18
+/**
+ * nJavOS - Not Java Operating System
+ * by Alunos SOE 2018/1
  */
 
 #ifndef CONFIG_TIMER_H
@@ -10,10 +8,10 @@
 
 #include <xc.h>
 #include "config.h"
-#include "scheduler.h"
-   
-void nJavOS_inti_timer();
-void interrupt timer_zero(void);
+      
+void interrupt timer_zero();
+void nJavOS_init_timer();        
+        
 
 #endif	/* CONFIG_TIMER_H */
 

@@ -1,0 +1,121 @@
+Version 3.2 HI-TECH Software Intermediate Code
+"12 semaphore.h
+[s S7 `ui -> 5 `i `ui 1 `ui 1 ]
+[n S7 sem_queue tasks tasks_bloqued next_task_to_free ]
+"18
+[s S8 `ui 1 `S7 1 ]
+[n S8 semaphore sem_v sem_bloqued_queue ]
+"24
+[v _sem_wait `(v ~T0 @X0 0 ef1`*S8 ]
+"9 tasks.c
+[v _controle `S8 ~T0 @X0 0 e ]
+"25 semaphore.h
+[v _sem_post `(v ~T0 @X0 0 ef1`*S8 ]
+[; ;types.h: 16: typedef void* TASK;
+[; ;types.h: 17: typedef TASK (task_ptr_t)(void);
+[; ;types.h: 18: typedef unsigned int u_int;
+[; ;types.h: 19: typedef enum {READY = 0, RUNNING, WAITING, FINISHED} state_t;
+[; ;types.h: 21: typedef struct stack_PIC18 {
+[; ;types.h: 22: u_int r_TOSU;
+[; ;types.h: 23: u_int r_TOSL;
+[; ;types.h: 24: u_int r_TOSH;
+[; ;types.h: 25: } stack_PIC18_t;
+[; ;types.h: 27: typedef struct stack {
+[; ;types.h: 28: stack_PIC18_t stack_data[31];
+[; ;types.h: 29: u_int stack_size;
+[; ;types.h: 30: } stack_t;
+[; ;types.h: 32: typedef struct tcb {
+[; ;types.h: 33: u_int task_ID;
+[; ;types.h: 34: u_int task_prior;
+[; ;types.h: 35: task_ptr_t *task_ptr;
+[; ;types.h: 36: state_t task_state;
+[; ;types.h: 37: stack_t task_stack;
+[; ;types.h: 38: u_int rBSR;
+[; ;types.h: 39: u_int rWORK;
+[; ;types.h: 40: } tcb_t;
+[; ;types.h: 42: typedef struct ready_Queue {
+[; ;types.h: 43: tcb_t task_READY[5+1];
+[; ;types.h: 44: u_int tasks_installed;
+[; ;types.h: 45: u_int task_running;
+[; ;types.h: 46: } ready_Queue_t;
+[; ;types.h: 48: typedef struct delay_task_data {
+[; ;types.h: 49: u_int index_ready_queue;
+[; ;types.h: 50: u_int time_to_delay;
+[; ;types.h: 51: } delay_task_data_t;
+[; ;types.h: 53: typedef struct delay_Queue {
+[; ;types.h: 55: delay_task_data_t task_DELAY_W[5];
+[; ;types.h: 57: u_int tasks_waiting;
+[; ;types.h: 58: } delay_Queue_t;
+[; ;tasks.h: 11: TASK task_one();
+[; ;tasks.h: 12: TASK task_two();
+[; ;semaphore.h: 12: typedef struct sem_queue {
+[; ;semaphore.h: 13: u_int tasks[5];
+[; ;semaphore.h: 14: u_int tasks_bloqued;
+[; ;semaphore.h: 15: u_int next_task_to_free;
+[; ;semaphore.h: 16: } sem_queue_t;
+[; ;semaphore.h: 18: typedef struct semaphore {
+[; ;semaphore.h: 19: u_int sem_v;
+[; ;semaphore.h: 20: sem_queue_t sem_bloqued_queue;
+[; ;semaphore.h: 21: } sem_t;
+[; ;semaphore.h: 23: void sem_init(sem_t *s, u_int s_valor);
+[; ;semaphore.h: 24: void sem_wait(sem_t *s);
+[; ;semaphore.h: 25: void sem_post(sem_t *s);
+[; ;tasks.c: 9: extern sem_t controle;
+"11 tasks.c
+[v _task_one `(*v ~T0 @X0 1 ef ]
+"12
+{
+[; ;tasks.c: 11: TASK task_one()
+[; ;tasks.c: 12: {
+[e :U _task_one ]
+[f ]
+[; ;tasks.c: 13: while (1) {
+"13
+[e :U 11 ]
+{
+[; ;tasks.c: 14: sem_wait(&controle);
+"14
+[e ( _sem_wait (1 &U _controle ]
+[; ;tasks.c: 18: sem_post(&controle);
+"18
+[e ( _sem_post (1 &U _controle ]
+"19
+}
+[e :U 10 ]
+"13
+[e $U 11  ]
+[e :U 12 ]
+[; ;tasks.c: 19: }
+[; ;tasks.c: 20: }
+"20
+[e :UE 9 ]
+}
+"22
+[v _task_two `(*v ~T0 @X0 1 ef ]
+"23
+{
+[; ;tasks.c: 22: TASK task_two()
+[; ;tasks.c: 23: {
+[e :U _task_two ]
+[f ]
+[; ;tasks.c: 24: while (1) {
+"24
+[e :U 15 ]
+{
+[; ;tasks.c: 25: sem_wait(&controle);
+"25
+[e ( _sem_wait (1 &U _controle ]
+[; ;tasks.c: 29: sem_post(&controle);
+"29
+[e ( _sem_post (1 &U _controle ]
+"30
+}
+[e :U 14 ]
+"24
+[e $U 15  ]
+[e :U 16 ]
+[; ;tasks.c: 30: }
+[; ;tasks.c: 31: }
+"31
+[e :UE 13 ]
+}

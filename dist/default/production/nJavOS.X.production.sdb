@@ -1,0 +1,243 @@
+[p LITE_MODE AUTOSTATIC LFSROK EMI_WORD ]
+[d version 1.1 ]
+[d edition pro ]
+[d chip 18F4520 ]
+[d frameptr 4065 ]
+"12 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\kernel.c
+[e E5 . `uc
+READY 0
+RUNNING 1
+WAITING 2
+FINISHED 3
+]
+"8 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\scheduler.c
+[e E5 . `uc
+READY 0
+RUNNING 1
+WAITING 2
+FINISHED 3
+]
+"25 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\config_timer.c
+[e E3009 . `uc
+READY 0
+RUNNING 1
+WAITING 2
+FINISHED 3
+]
+"22 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\sempahore.c
+[e E5 . `uc
+READY 0
+RUNNING 1
+WAITING 2
+FINISHED 3
+]
+"62 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\float.c
+[v ___ftpack __ftpack `(f  1 e 3 0 ]
+"86 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\ftadd.c
+[v ___ftadd __ftadd `(f  1 e 3 0 ]
+"54 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\ftdiv.c
+[v ___ftdiv __ftdiv `(f  1 e 3 0 ]
+"62 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\ftmul.c
+[v ___ftmul __ftmul `(f  1 e 3 0 ]
+"20 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\ftsub.c
+[v ___ftsub __ftsub `(f  1 e 3 0 ]
+"8 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
+"10 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\sprcadd.c
+[v ___fladd __fladd `(d  1 e 3 0 ]
+"245
+[v ___flsub __flsub `(d  1 e 3 0 ]
+"11 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\sprcdiv.c
+[v ___fldiv __fldiv `(d  1 e 3 0 ]
+"8 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\sprcmul.c
+[v ___flmul __flmul `(d  1 e 3 0 ]
+"15 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\Umul16.c
+[v ___wmul __wmul `(ui  1 e 2 0 ]
+[v i2___wmul __wmul `(ui  1 e 2 0 ]
+"15 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\Umul32.c
+[v ___lmul __lmul `(ul  1 e 4 0 ]
+"14 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\config_timer.c
+[v _timer_zero timer_zero `II(v  1 e 1 0 ]
+"29
+[v _nJavOS_init_timer nJavOS_init_timer `(v  1 e 1 0 ]
+"17 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\kernel.c
+[v _idle idle `(*.2v  1 e 2 0 ]
+"28
+[v _nJavOS_start nJavOS_start `(v  1 e 1 0 ]
+"42
+[v _nJavOS_task_create nJavOS_task_create `(v  1 e 1 0 ]
+"67
+[v _nJavOS_dispatcher nJavOS_dispatcher `(v  1 e 1 0 ]
+"15 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\main.c
+[v _main main `(v  1 e 1 0 ]
+"6 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\scheduler.c
+[v _rr_scheduler rr_scheduler `(ui  1 e 2 0 ]
+"11 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\sempahore.c
+[v _sem_init sem_init `(v  1 e 1 0 ]
+"18
+[v _sem_wait sem_wait `(v  1 e 1 0 ]
+"34
+[v _sem_post sem_post `(v  1 e 1 0 ]
+"11 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\tasks.c
+[v _task_one task_one `(*.2v  1 e 2 0 ]
+"22
+[v _task_two task_two `(*.2v  1 e 2 0 ]
+[s S294 . 1 `uc 1 T0PS 1 0 :3:0 
+`uc 1 PSA 1 0 :1:3 
+`uc 1 T0SE 1 0 :1:4 
+`uc 1 T0CS 1 0 :1:5 
+`uc 1 T08BIT 1 0 :1:6 
+`uc 1 TMR0ON 1 0 :1:7 
+]
+"6189 C:\Program Files (x86)\Microchip\xc8\v1.45\include\pic18f4520.h
+[s S301 . 1 `uc 1 T0PS0 1 0 :1:0 
+`uc 1 T0PS1 1 0 :1:1 
+`uc 1 T0PS2 1 0 :1:2 
+`uc 1 T0PS3 1 0 :1:3 
+`uc 1 . 1 0 :2:4 
+`uc 1 T016BIT 1 0 :1:6 
+]
+[u S308 . 1 `S294 1 . 1 0 `S301 1 . 1 0 ]
+[v _T0CONbits T0CONbits `VES308  1 e 1 @4053 ]
+"6256
+[v _TMR0L TMR0L `VEuc  1 e 1 @4054 ]
+"6397
+[v _BSR BSR `VEuc  1 e 1 @4064 ]
+"6460
+[v _WREG WREG `VEuc  1 e 1 @4072 ]
+[s S105 . 1 `uc 1 RBIF 1 0 :1:0 
+`uc 1 INT0IF 1 0 :1:1 
+`uc 1 TMR0IF 1 0 :1:2 
+`uc 1 RBIE 1 0 :1:3 
+`uc 1 INT0IE 1 0 :1:4 
+`uc 1 TMR0IE 1 0 :1:5 
+`uc 1 PEIE_GIEL 1 0 :1:6 
+`uc 1 GIE_GIEH 1 0 :1:7 
+]
+"6722
+[s S114 . 1 `uc 1 . 1 0 :1:0 
+`uc 1 INT0F 1 0 :1:1 
+`uc 1 T0IF 1 0 :1:2 
+`uc 1 . 1 0 :1:3 
+`uc 1 INT0E 1 0 :1:4 
+`uc 1 T0IE 1 0 :1:5 
+`uc 1 PEIE 1 0 :1:6 
+`uc 1 GIE 1 0 :1:7 
+]
+[s S123 . 1 `uc 1 . 1 0 :6:0 
+`uc 1 GIEL 1 0 :1:6 
+`uc 1 GIEH 1 0 :1:7 
+]
+[u S127 . 1 `S105 1 . 1 0 `S114 1 . 1 0 `S123 1 . 1 0 ]
+[v _INTCONbits INTCONbits `VES127  1 e 1 @4082 ]
+"6902
+[v _STKPTR STKPTR `VEuc  1 e 1 @4092 ]
+"6983
+[v _TOSL TOSL `VEuc  1 e 1 @4093 ]
+"6990
+[v _TOSH TOSH `VEuc  1 e 1 @4094 ]
+"6997
+[v _TOSU TOSU `VEuc  1 e 1 @4095 ]
+"12 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\config_timer.c
+[v _quantum quantum `i  1 e 2 0 ]
+[s S75 stack_PIC18 6 `ui 1 r_TOSU 2 0 `ui 1 r_TOSL 2 2 `ui 1 r_TOSH 2 4 ]
+"12 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\kernel.c
+[s S79 stack 188 `[31]S75 1 stack_data 186 0 `ui 1 stack_size 2 186 ]
+[s S82 tcb 199 `ui 1 task_ID 2 0 `ui 1 task_prior 2 2 `*.37(*.2v 1 task_ptr 2 4 `E5 1 task_state 1 6 `S79 1 task_stack 188 7 `ui 1 rBSR 2 195 `ui 1 rWORK 2 197 ]
+[s S90 ready_Queue 1198 `[6]S82 1 task_READY 1194 0 `ui 1 tasks_installed 2 1194 `ui 1 task_running 2 1196 ]
+[v _Ready_Queue Ready_Queue `S90  1 e 1198 0 ]
+[s S94 delay_task_data 4 `ui 1 index_ready_queue 2 0 `ui 1 time_to_delay 2 2 ]
+"13
+[s S97 delay_Queue 22 `[5]S94 1 task_DELAY_W 20 0 `ui 1 tasks_waiting 2 20 ]
+[v _Delay_Queue Delay_Queue `S97  1 e 22 0 ]
+[s S21 sem_queue 14 `[5]ui 1 tasks 10 0 `ui 1 tasks_bloqued 2 10 `ui 1 next_task_to_free 2 12 ]
+"13 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\main.c
+[s S25 semaphore 16 `ui 1 sem_v 2 0 `S21 1 sem_bloqued_queue 14 2 ]
+[v _controle controle `S25  1 e 16 0 ]
+"15
+[v _main main `(v  1 e 1 0 ]
+{
+"30
+} 0
+"11 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\sempahore.c
+[v _sem_init sem_init `(v  1 e 1 0 ]
+{
+[s S21 sem_queue 14 `[5]ui 1 tasks 10 0 `ui 1 tasks_bloqued 2 10 `ui 1 next_task_to_free 2 12 ]
+[s S25 semaphore 16 `ui 1 sem_v 2 0 `S21 1 sem_bloqued_queue 14 2 ]
+[v sem_init@s s `*.39S25  1 p 2 0 ]
+[v sem_init@s_valor s_valor `ui  1 p 2 2 ]
+"16
+} 0
+"42 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\kernel.c
+[v _nJavOS_task_create nJavOS_task_create `(v  1 e 1 0 ]
+{
+[v nJavOS_task_create@id id `ui  1 p 2 6 ]
+[v nJavOS_task_create@prior prior `ui  1 p 2 8 ]
+[v nJavOS_task_create@ptr_f ptr_f `*.37(*.2v  1 p 2 10 ]
+"51
+} 0
+"28
+[v _nJavOS_start nJavOS_start `(v  1 e 1 0 ]
+{
+"40
+} 0
+"15 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\Umul16.c
+[v ___wmul __wmul `(ui  1 e 2 0 ]
+{
+"17
+[v ___wmul@product product `ui  1 a 2 4 ]
+"15
+[v ___wmul@multiplier multiplier `ui  1 p 2 0 ]
+[v ___wmul@multiplicand multiplicand `ui  1 p 2 2 ]
+"53
+} 0
+"29 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\config_timer.c
+[v _nJavOS_init_timer nJavOS_init_timer `(v  1 e 1 0 ]
+{
+"48
+} 0
+"14
+[v _timer_zero timer_zero `II(v  1 e 1 0 ]
+{
+"27
+} 0
+"67 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\kernel.c
+[v _nJavOS_dispatcher nJavOS_dispatcher `(v  1 e 1 0 ]
+{
+[v nJavOS_dispatcher@state state `E5  1 a 1 wreg ]
+"76
+[v nJavOS_dispatcher@index_stack index_stack `ui  1 a 2 23 ]
+"69
+[v nJavOS_dispatcher@next_task_to_run next_task_to_run `ui  1 a 2 20 ]
+"67
+[v nJavOS_dispatcher@state state `E5  1 a 1 wreg ]
+"71
+[v nJavOS_dispatcher@state state `E5  1 a 1 22 ]
+"91
+} 0
+"6 F:\Usuários\Anderson\Aulas\Ensino\Graduação\Sistemas Operacionais Embarcados\Atividades Aulas\2018-1\nJavOS.X\scheduler.c
+[v _rr_scheduler rr_scheduler `(ui  1 e 2 0 ]
+{
+"8
+[v rr_scheduler@tasks_ready tasks_ready `ui  1 a 2 14 ]
+[v rr_scheduler@task_to_running task_to_running `ui  1 a 2 12 ]
+"19
+} 0
+"15 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\Umul16.c
+[v i2___wmul __wmul `(ui  1 e 2 0 ]
+{
+[v i2___wmul@product __wmul `ui  1 a 2 4 ]
+[v i2___wmul@multiplier multiplier `ui  1 p 2 0 ]
+[v i2___wmul@multiplicand multiplicand `ui  1 p 2 2 ]
+"53
+} 0
+"8 C:\Program Files (x86)\Microchip\xc8\v1.45\sources\common\lwmod.c
+[v ___lwmod __lwmod `(ui  1 e 2 0 ]
+{
+"11
+[v ___lwmod@counter counter `uc  1 a 1 4 ]
+"8
+[v ___lwmod@dividend dividend `ui  1 p 2 0 ]
+[v ___lwmod@divisor divisor `ui  1 p 2 2 ]
+"26
+} 0

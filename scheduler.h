@@ -11,8 +11,6 @@
 
 #define QUANTUM 4
 
-extern ready_Queue_t Ready_Queue;
-
 u_int rr_scheduler();
 u_int priority_scheduler();
 

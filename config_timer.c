@@ -1,35 +1,48 @@
+/**
+ * nJavOS - Not Java Operating System
+ * by Alunos SOE 2018/1
+ */
+
+#include <pic18f4520.h>
+
 #include "config_timer.h"
-void nJavOS_init_timer()
+#include "kernel.h"
+#include "scheduler.h"
+
+int quantum = 0;
+
+void interrupt timer_zero()
 {
-    INTCONbits.GIE = 1;        //peripharel interrupt enable
-    INTCONbits.TMR0IF = 0x0;  //Clear timer0 overflow interrupt flag
-    INTCONbits.TMR0IE = 1;    //enable the timer0 by setting TRM0IE flag
-
-    T0CON.TMR0ON = ON;     // Turn Timer0 on.       
-    T0CON.T08BIT = 0;     // 16 Bit timer
-    T0CON.T0CS = 0;       // Internal clock
-    T0CON.PSA = 0;        // Set scaler to 1:4
-    T0CON.T0PS = 111;
-
-    TMR0H = 0x0;         // Initial count of 0xF830
-    
-    /*
-     TEMPO EM MS = 256 - (TEMPO EM S * CLOCK)/ (PRE-SCALER * MCY)
-     */
-    
-    TMR0L = 252;
+  INTCONbits.TMR0IF = 0;
+  quantum++;
+  
+  // Verifica se tem tarefa aguardando delay
+  
+  
+  // verifica se acabou o quantum
+  if (quantum == QUANTUM) {
+    quantum = 0;
+    nJavOS_dispatcher(READY);
+  }  
 }
 
-int q = QUANTUM;
-void interrupt timer_zero(void)
+void nJavOS_init_timer()
 {
-   // Reset interrupt flag
-   INTCONbits.TMR0IF = 0;
-   q--;
+  INTCONbits.TMR0IE   = 1;
+  INTCONbits.TMR0IF   = 0;
+  INTCONbits.GIE      = 1;
 
-   if(q == 0)
-   {
-       q = QUANTUM
-       nJavOS_dispatcher(READY);
-   }
+  T0CONbits.T0CS      = 0;
+  T0CONbits.PSA       = 0;
+  T0CONbits.T0PS      = 0b111;   // 001
+
+  /**
+   * 1 ms:
+   *  256 - (0,001 * 4000000) / (256 (preescaler) * 4 (MCY))
+   *  = 252 
+   */
+  TMR0L = 252;
+  
+  // Inicializa o timer
+  T0CONbits.TMR0ON    = ON;
 }

@@ -1,0 +1,93 @@
+
+# 1 "tasks.c"
+
+# 16 "types.h"
+typedef void* TASK;
+typedef TASK (task_ptr_t)(void);
+typedef unsigned int u_int;
+typedef enum {READY = 0, RUNNING, WAITING, FINISHED} state_t;
+
+typedef struct stack_PIC18 {
+u_int r_TOSU;
+u_int r_TOSL;
+u_int r_TOSH;
+} stack_PIC18_t;
+
+typedef struct stack {
+stack_PIC18_t stack_data[31];
+u_int stack_size;
+} stack_t;
+
+typedef struct tcb {
+u_int task_ID;
+u_int task_prior;
+task_ptr_t *task_ptr;
+state_t task_state;
+stack_t task_stack;
+u_int rBSR;
+u_int rWORK;
+} tcb_t;
+
+typedef struct ready_Queue {
+tcb_t task_READY[5+1];
+u_int tasks_installed;
+u_int task_running;
+} ready_Queue_t;
+
+typedef struct delay_task_data {
+u_int index_ready_queue;
+u_int time_to_delay;
+} delay_task_data_t;
+
+typedef struct delay_Queue {
+
+delay_task_data_t task_DELAY_W[5];
+
+u_int tasks_waiting;
+} delay_Queue_t;
+
+# 11 "tasks.h"
+TASK task_one();
+TASK task_two();
+
+# 12 "semaphore.h"
+typedef struct sem_queue {
+u_int tasks[5];
+u_int tasks_bloqued;
+u_int next_task_to_free;
+} sem_queue_t;
+
+typedef struct semaphore {
+u_int sem_v;
+sem_queue_t sem_bloqued_queue;
+} sem_t;
+
+void sem_init(sem_t *s, u_int s_valor);
+void sem_wait(sem_t *s);
+void sem_post(sem_t *s);
+
+# 9 "tasks.c"
+extern sem_t controle;
+
+TASK task_one()
+{
+while (1) {
+sem_wait(&controle);
+
+
+
+sem_post(&controle);
+}
+}
+
+TASK task_two()
+{
+while (1) {
+sem_wait(&controle);
+
+
+
+sem_post(&controle);
+}
+}
+
