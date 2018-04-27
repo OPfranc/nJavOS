@@ -6,9 +6,10 @@
 #ifndef DELAY_H
 #define	DELAY_H
 
-void delay_remove();  
-void delay_conta_tempo();
+#include <xc.h>
+#include "config.h"
 
+void delay_remove();
 
 #endif	/* DELAY_H */
 

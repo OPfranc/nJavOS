@@ -8,6 +8,7 @@
 
 #include "types.h"
 #include <xc.h>
+#include <pic18f4520.h>
 
 #define ENABLE_GLOBAL_INTERRUPTS() INTCONbits.GIE   = 1
 #define DISABLE_GLOBAL_INTERRUPTS() INTCONbits.GIE  = 0
@@ -29,18 +30,27 @@ extern ready_Queue_t Ready_Queue;
     Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_size = index_stack;\
 
 #define RESTORE_CONTEXT()\
-    u_int index_stack = Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_size - 1;\
-    BSR = Ready_Queue.task_READY[Ready_Queue.task_running].rBSR;\
-    WREG = Ready_Queue.task_READY[Ready_Queue.task_running].rWORK;\
     STKPTR = 0;\
-    while (index_stack) {\
+    if(Ready_Queue.task_READY[Ready_Queue.task_running].task_exec == 0)\
+    {\
         asm("PUSH");\
-        TOSH = Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_data[index_stack].r_TOSH;\
-        TOSL = Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_data[index_stack].r_TOSL;\
-        TOSU = Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_data[index_stack].r_TOSU;\        
-        index_stack--;\        
+        Ready_Queue.task_READY[Ready_Queue.task_running].task_exec = 1;\
+        TOS = Ready_Queue.task_READY[Ready_Queue.task_running].task_ptr;\
     }\
-    
+    else\
+    {\
+        u_int index_stack = Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_size - 1;\
+        BSR = Ready_Queue.task_READY[Ready_Queue.task_running].rBSR;\
+        WREG = Ready_Queue.task_READY[Ready_Queue.task_running].rWORK;\
+        while (index_stack) {\
+            asm("PUSH");\
+            TOSH = Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_data[index_stack].r_TOSH;\
+            TOSL = Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_data[index_stack].r_TOSL;\
+            TOSU = Ready_Queue.task_READY[Ready_Queue.task_running].task_stack.stack_data[index_stack].r_TOSU;\
+            index_stack--;\
+        }\
+    }\
+
 // Tarefa idle
 TASK idle();
 

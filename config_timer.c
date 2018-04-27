@@ -8,22 +8,21 @@
 #include "config_timer.h"
 #include "kernel.h"
 #include "scheduler.h"
+#include "delay.h"
 
 int quantum = 0;
-
 void interrupt timer_zero()
 {
   INTCONbits.TMR0IF = 0;
   quantum++;
-  
   // Verifica se tem tarefa aguardando delay
-  
-  
+  delay_remove();
   // verifica se acabou o quantum
   if (quantum == QUANTUM) {
     quantum = 0;
     nJavOS_dispatcher(READY);
   }  
+  TMR0L = 252;
 }
 
 void nJavOS_init_timer()
