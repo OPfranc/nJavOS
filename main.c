@@ -10,27 +10,26 @@
 #include "semaphore.h"
 
 // Variáveis globais
-sem_t cheio, vazio;
+sem_t c1, c0;
 asm("GLOBAL _task_one, _task_two, _idle");
 
 void main(void) {
-  
-  // Faz configuração de usuário
-  config_user();
-  
-  nJavOS_start();
-  nJavOS_init_timer();
- 
-  sem_init(&vazio, 1);
-  sem_init(&cheio, 0);
-  
-  // Cria as tarefas
-  nJavOS_task_create(1, 10, task_one);
-  nJavOS_task_create(2, 10, task_two);
-  //nJavOS_task_create(3, 10, task_three);
-   
-  while (1){
-  }
 
-  return;
+    // Faz configuração de usuário
+    config_user();
+
+    OS_start();
+    init_timer();
+
+    sem_init(&c1, 1, 1);
+    sem_init(&c0, 0, 1);
+
+    // Cria as tarefas
+    task_create(1, 10, task_one);
+    task_create(2, 10, task_two);
+
+    while (1){
+    }
+
+    return;
 }

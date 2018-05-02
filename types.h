@@ -15,7 +15,7 @@
 typedef void* TASK;
 typedef TASK (task_ptr_t)(void);
 typedef unsigned int u_int;
-typedef enum {READY = 0, RUNNING, WAITING, WAITING_PIPE, WAITING_SEMAPHORE, FINISHED} state_t;
+typedef enum {READY = 0, RUNNING, WAITING, FINISHED} state_t;
 
 typedef struct stack_PIC18 {
     u_int r_TOSU;
@@ -31,7 +31,8 @@ typedef struct stack {
 typedef struct tcb {
     u_int task_ID;
     u_int task_prior;
-    u_int time_to_delay;
+    int time_to_delay;
+    int blocked;
     task_ptr_t *task_ptr;
     state_t task_state;
     stack_t task_stack;
@@ -40,13 +41,12 @@ typedef struct tcb {
     u_int rWORK;
 } tcb_t;
 
-typedef struct ready_Queue {
+typedef struct _Queue {
     tcb_t task_READY[MAX_TASKS + 1];
     u_int tasks_installed;
     u_int tasks_ready;
     u_int task_running;
-} ready_Queue_t;
-
+} Queue_t;
 
 #endif	/* TYPES_H */
 

@@ -10,7 +10,7 @@
 #include "config.h"
       
 void interrupt timer_zero();
-void nJavOS_init_timer();        
+void init_timer();        
         
 
 #endif	/* CONFIG_TIMER_H */

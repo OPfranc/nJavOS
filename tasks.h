@@ -11,8 +11,6 @@
 void config_user();
 TASK task_one();
 TASK task_two();
-TASK task_three();
-
 
 #endif	/* TASKS_H */
 

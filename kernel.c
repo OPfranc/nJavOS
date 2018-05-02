@@ -10,7 +10,7 @@
 #include "delay.h"
 
 // Variáveis globais
-ready_Queue_t Ready_Queue;
+Queue_t Queue;
 
 // Tarefa IDLE
 TASK idle() {   
@@ -18,59 +18,77 @@ TASK idle() {
     {    
         Nop();
         Nop();
-        Nop();
+        Nop();  
     }
+    return 0;
 }
 
 // Chamadas de sistema
-void nJavOS_start()
+void OS_start()
 {
-    Ready_Queue.tasks_installed = 0;
-    Ready_Queue.task_running = MAX_TASKS;
-    Ready_Queue.tasks_ready = 0;
+    Queue.tasks_installed = 0;
+    Queue.task_running = IDLE;
+    Queue.tasks_ready = 0;
     // Cria tarefa idle
-    Ready_Queue.task_READY[MAX_TASKS].task_ID    = 0;
-    Ready_Queue.task_READY[MAX_TASKS].task_prior = 0;
-    Ready_Queue.task_READY[MAX_TASKS].task_state = READY;
-    Ready_Queue.task_READY[MAX_TASKS].task_ptr   = idle;
-    Ready_Queue.task_READY[MAX_TASKS].time_to_delay = 0;
+    Queue.task_READY[IDLE].task_ID    = 0;
+    Queue.task_READY[IDLE].task_prior = 99;
+    Queue.task_READY[IDLE].task_state = READY;
+    Queue.task_READY[IDLE].task_ptr   = idle;
+    Queue.task_READY[IDLE].time_to_delay = 0;
 }
 
-void nJavOS_task_create(u_int id, u_int prior, task_ptr_t ptr_f)
+void task_create(u_int id, u_int prior, task_ptr_t ptr_f)
 {
-  Ready_Queue.task_READY[Ready_Queue.tasks_installed].task_ID    = id;
-  Ready_Queue.task_READY[Ready_Queue.tasks_installed].task_prior = prior;
-  Ready_Queue.task_READY[Ready_Queue.tasks_installed].time_to_delay = 0;  
-  Ready_Queue.task_READY[Ready_Queue.tasks_installed].task_state = READY;
-  Ready_Queue.task_READY[Ready_Queue.tasks_installed].task_ptr   = ptr_f;
-  Ready_Queue.task_READY[Ready_Queue.tasks_installed].task_stack.stack_size = 0;
-  Ready_Queue.task_READY[Ready_Queue.tasks_installed].task_exec = 0;
-  Ready_Queue.tasks_installed++;
-  Ready_Queue.tasks_ready++;
+    Queue.task_READY[Queue.tasks_installed].task_ID    = id;
+    Queue.task_READY[Queue.tasks_installed].task_prior = prior;
+    Queue.task_READY[Queue.tasks_installed].time_to_delay = 0;  
+    Queue.task_READY[Queue.tasks_installed].blocked = 0;
+    Queue.task_READY[Queue.tasks_installed].task_state = READY;
+    Queue.task_READY[Queue.tasks_installed].task_ptr   = ptr_f;
+    Queue.task_READY[Queue.tasks_installed].task_stack.stack_size = 0;
+    Queue.task_READY[Queue.tasks_installed].task_exec = 0;
+    Queue.tasks_installed++;
+    Queue.tasks_ready++;
+    if(!RR_SCHEDULER) dispatcher(READY);
 }
 
-void nJavOS_task_delay(u_int xMs)
+void task_remove()
 {
-    u_int position = 0;
     DISABLE_GLOBAL_INTERRUPTS();
-    Ready_Queue.task_READY[Ready_Queue.task_running].time_to_delay = xMs;
-    Ready_Queue.tasks_ready = Ready_Queue.tasks_ready - 1;
-    nJavOS_dispatcher(WAITING);
+    u_int t = Queue.task_running;
+    Queue.tasks_ready--;
+    dispatcher(FINISHED);
+    for(t; t < Queue.tasks_installed - 1; t++)
+    {
+        Queue.task_READY[t] = Queue.task_READY[t+1];
+    }
+    Queue.tasks_installed--;
     ENABLE_GLOBAL_INTERRUPTS();
 }
 
-void nJavOS_dispatcher(state_t state)
+void task_delay(u_int xMs)
 {
     DISABLE_GLOBAL_INTERRUPTS();
+    Queue.task_READY[Queue.task_running].time_to_delay = xMs;
+    Queue.tasks_ready--;
+    dispatcher(WAITING);
+    ENABLE_GLOBAL_INTERRUPTS();
+}
+
+void dispatcher(state_t state)
+{
+    u_int t;
+    DISABLE_GLOBAL_INTERRUPTS();
     // Altera o estado da tarefa que está em execução
-    Ready_Queue.task_READY[Ready_Queue.task_running].task_state = state;
+    Queue.task_READY[Queue.task_running].task_state = state;
     // Salva o contexto da tarefa em execução
     SAVE_CONTEXT();
     // Escolha a próxima tarefa que será executada
-    Ready_Queue.task_running = rr_scheduler();
+    RR_SCHEDULER ? t = rr_scheduler() : t = priority_scheduler();
+    Queue.task_running = t;
     // Restaura o contexto da tarefa que será executada  
-    Ready_Queue.task_READY[Ready_Queue.task_running].task_state = RUNNING;
+    Queue.task_READY[Queue.task_running].task_state = RUNNING;
     RESTORE_CONTEXT();
-    //Ready_Queue.task_READY[Ready_Queue.task_running].task_ptr();
+    //Queue.task_READY[Queue.task_running].task_ptr();
     ENABLE_GLOBAL_INTERRUPTS();
 }

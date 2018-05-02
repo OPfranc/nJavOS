@@ -16,11 +16,13 @@ typedef struct sem_queue {
 } sem_queue_t;
 
 typedef struct semaphore {
-    u_int sem_v;
+    int sem_v;
+    int sem_f;
+    u_int sem_b;
     sem_queue_t sem_bloqued_queue;
 } sem_t;
 
-void sem_init(sem_t *s, u_int s_valor);
+void sem_init(sem_t *s, u_int s_valor, u_int f_valor);
 void sem_wait(sem_t *s);
 void sem_post(sem_t *s);
 

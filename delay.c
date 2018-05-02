@@ -5,23 +5,26 @@
 
 #include "types.h"
 #include "delay.h"
+#include "kernel.h"
 
 // Variáveis globais
-extern ready_Queue_t Ready_Queue;
+extern Queue_t Queue;
 
 void delay_remove()
 {
     int i;
-    for (i = 0; i < Ready_Queue.tasks_installed; i++)
+    for (i = 0; i < (int)Queue.tasks_installed; i++)
     {
-        if (Ready_Queue.task_READY[i].task_state == WAITING)
-        {            
-            Ready_Queue.task_READY[i].time_to_delay = Ready_Queue.task_READY[i].time_to_delay - 1;
-            if (Ready_Queue.task_READY[i].time_to_delay <= 0) 
+        if (Queue.task_READY[i].task_state == WAITING)
+        {
+            if(Queue.task_READY[i].time_to_delay > 0) Queue.task_READY[i].time_to_delay--;
+            if ((Queue.task_READY[i].blocked <= 0) && (Queue.task_READY[i].time_to_delay <= 0)) 
             {
-                Ready_Queue.tasks_ready++;
-                Ready_Queue.task_READY[i].task_state = READY;
-                Ready_Queue.task_READY[i].time_to_delay = 0;
+                Queue.tasks_ready++;
+                Queue.task_READY[i].task_state = READY;   
+                Queue.task_READY[i].time_to_delay = 0;
+                Queue.task_READY[i].blocked = 0;
+                if(!RR_SCHEDULER) dispatcher(READY);
             }
         }
     }

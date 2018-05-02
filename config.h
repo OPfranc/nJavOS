@@ -9,11 +9,10 @@
 #define ON                  1
 #define OFF                 0
 #define RR_SCHEDULER        ON
-#define PRIOR_SCHEDULER     OFF
 
 // Configurações de usuário
 #define MAX_TASKS           5
-
+#define IDLE                MAX_TASKS
 
 #endif	/* CONFIG_H */
 
