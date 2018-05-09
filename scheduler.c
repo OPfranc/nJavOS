@@ -1,7 +1,16 @@
 #include "scheduler.h"
 #include "kernel.h"
 
+/* Declaração da variavel global de fila */
 extern Queue_t Queue;
+
+/* A função pega o indice da tarefa atual, em execução, e quadar em n_task,
+ * compara se tem tarefas prontas, caso não tenha retorna IDLE como a tarefa 
+ * escolhida, caso tenha tarefas prontas, ele faz ao menos uma vez o segunte:
+ * caso se a tarefa em execução for IDLE ela define n_task como 0, a primeira 
+ * tarefa, e vai passando a fila até encontrar uma tarefa que esteja em estado 
+ * de pronto para executa, quando encontrar ele para, retorna n_task. 
+ */
 
 u_int rr_scheduler()
 {   
@@ -20,6 +29,13 @@ u_int rr_scheduler()
     }   
     return n_task;
 }
+
+/* A função define n_task como IDLE, faz a comparação se existe tarefas prontas, 
+ * caso exista então a função passa por todas as tarefas instaladas através do 
+ * for comparando se as tarefas estão prontas e se o a prioridade é maior, caso 
+ * a tarefa esteja pronta e a prioridade é maior ele troca n_task por i, que é
+ * o indice da tarefa no vetor de tarefas instaladas.
+ */
 
 u_int priority_scheduler()
 {

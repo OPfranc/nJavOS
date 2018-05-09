@@ -22,8 +22,8 @@ typedef struct pipe {
 } pipe_t;
 
 void pipe_create(pipe_t * pipe);
-void pipe_read(pipe_t * pipe, char * msg, u_int pos);
-void pipe_write(pipe_t * pipe, char msg, u_int pos);
+void pipe_read(pipe_t * pipe, char * msg);
+void pipe_write(pipe_t * pipe, char msg);
 
 #endif	/* PIPE_H */
 

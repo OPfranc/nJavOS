@@ -15,11 +15,11 @@ void pipe_create(pipe_t * pipe)
     pipe->pipe_count  = 0;
 }
 
-void pipe_read(pipe_t * pipe, char * msg, u_int pos)
+void pipe_read(pipe_t * pipe, char * msg)
 {
     DISABLE_GLOBAL_INTERRUPTS();
-    pipe->pos_task_read = pos;
-    if ((pipe->read_pos != pipe->write_pos) || (pipe->pipe_count == PIPE_SIZE))
+    pipe->pos_task_read = Queue.task_running;
+    if (pipe->pipe_count > 0)
     {
         *msg = pipe->pipe_msg[pipe->read_pos];
         pipe->read_pos = (pipe->read_pos + 1) % PIPE_SIZE;
@@ -27,7 +27,7 @@ void pipe_read(pipe_t * pipe, char * msg, u_int pos)
         // Verificar se tem alguém esperando msg no pipe.
         if (Queue.task_READY[pipe->pos_task_write].task_state == WAITING) 
         {
-            Queue.task_READY[Queue.task_running].blocked--;
+            Queue.task_READY[pipe->pos_task_write].blocked--;
             if(Queue.task_READY[pipe->pos_task_write].blocked <= 0 && Queue.task_READY[pipe->pos_task_write].time_to_delay <= 0)
             {
                 Queue.tasks_ready++;
@@ -45,10 +45,10 @@ void pipe_read(pipe_t * pipe, char * msg, u_int pos)
     ENABLE_GLOBAL_INTERRUPTS();
 }
 
-void pipe_write(pipe_t * pipe, char msg, u_int pos)
+void pipe_write(pipe_t * pipe, char msg)
 {
     DISABLE_GLOBAL_INTERRUPTS();
-    pipe->pos_task_write = pos;
+    pipe->pos_task_write = Queue.task_running;
     if (pipe->pipe_count < PIPE_SIZE) 
     {
         pipe->pipe_msg[pipe->write_pos] = msg;
@@ -57,7 +57,7 @@ void pipe_write(pipe_t * pipe, char msg, u_int pos)
         // Verificar se tem alguém esperando msg no pipe.
         if (Queue.task_READY[pipe->pos_task_read].task_state == WAITING) 
         {
-            Queue.task_READY[Queue.task_running].blocked--;
+            Queue.task_READY[pipe->pos_task_read].blocked--;
             if(Queue.task_READY[pipe->pos_task_read].blocked <= 0 && Queue.task_READY[pipe->pos_task_read].time_to_delay <= 0)
             {
                 Queue.tasks_ready++;
@@ -74,5 +74,3 @@ void pipe_write(pipe_t * pipe, char msg, u_int pos)
     }
     ENABLE_GLOBAL_INTERRUPTS();
 }
-       
-        
