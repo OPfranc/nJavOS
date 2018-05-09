@@ -33,6 +33,7 @@ typedef struct sem_queue {
 typedef struct semaphore {
     int sem_v;
     int sem_f;
+    u_int sem_b;
     sem_queue_t sem_bloqued_queue;
 } sem_t;
 
