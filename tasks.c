@@ -11,7 +11,7 @@
 #include "pipe.h"
 
 extern sem_t p;
-
+//extern pipe_t p;
 void config_user()
 {
     TRISDbits.RD0 = 0;
@@ -38,6 +38,11 @@ TASK task_one()
         task_delay(50);
         PORTDbits.RD0 = 0;
         sem_post(&p);
+        /*
+        pipe_write(&p '5');
+        PORTDbits.RD0 = ~PORTDbits.RD0;
+        task_delay(10);
+        */
     }
     return 0;
 }
@@ -51,6 +56,15 @@ TASK task_two()
         task_delay(100);
         PORTDbits.RD1 = 0;
         sem_post(&p);
+
+        /*
+        char msg;
+        pipe_read(&p &msg);
+        if(msg == '5') PORTDbits.RD2 = ~PORTDbits.RD2;
+        PORTDbits.RD1 = ~PORTDbits.RD1;
+        task_delay(100);
+        */
+        
     }
     return 0;
 }

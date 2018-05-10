@@ -26,14 +26,12 @@ typedef struct sem_queue {
  * A estrutura do semaforo é formada por:
  * - sem_v que é o valor de "lugares" disponíveis para o recurso
  * - sem_f que é o valor de "lugares" máximo para o recurso
- * - sem_b é a variavel que identifica se o semaforo já foi bloqueado
  * - sem_bloqued_queue é a fila de indices de tarefas bloqueadas
 */
 
 typedef struct semaphore {
     int sem_v;
     int sem_f;
-    u_int sem_b;
     sem_queue_t sem_bloqued_queue;
 } sem_t;
 

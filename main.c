@@ -12,6 +12,7 @@
 
 // Variáveis globais
 sem_t p;
+//pipe_t p;
 asm("GLOBAL _task_one, _task_two, _idle");
 
 void main(void) {
@@ -29,8 +30,10 @@ void main(void) {
     /* Inicializa o timer do PIC */
     init_timer();
 
+    
     sem_init(&p, 1, 1);
-
+    //pipe_create(&p);
+    
     // Cria as tarefas
     task_create(1, 1, task_one);
     task_create(2, 10, task_two);
