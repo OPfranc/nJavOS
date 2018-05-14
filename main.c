@@ -31,7 +31,7 @@ void main(void) {
     init_timer();
 
     
-    sem_init(&p, 1, 1);
+    sem_init(&p, 1);
     //pipe_create(&p);
     
     // Cria as tarefas

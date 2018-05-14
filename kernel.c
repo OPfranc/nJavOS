@@ -136,10 +136,13 @@ void dispatcher(state_t state)
     Queue.task_READY[Queue.task_running].task_state = state;
 
     /* Verifica se o estado da tarefa é finalizada */
-    if(state == FINISHED) organize_queue(Queue.task_running);
-    
-    /* Salva o contexto da tarefa em execução caso o estado não seja o finalizado */
-    if(state != FINISHED) {
+    if(state == FINISHED)
+    {
+        organize_queue(Queue.task_running);
+    } 
+    else  
+    {
+        /* Salva o contexto da tarefa em execução caso o estado não seja o finalizado */
         SAVE_CONTEXT();
     }
     /* Caso o RR estaja habilitado ele escalona pelo RR caso contrario executa

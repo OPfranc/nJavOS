@@ -9,10 +9,9 @@
 /* Declaração da variavel global de fila */
 extern Queue_t Queue;
 
-void sem_init(sem_t *s, u_int s_valor, u_int f_valor)
+void sem_init(sem_t *s, u_int s_valor)
 {
     s->sem_v = s_valor;
-    s->sem_f = f_valor;
     s->sem_bloqued_queue.tasks_bloqued = 0;
     s->sem_bloqued_queue.next_task_to_free = 0;
 }
@@ -39,7 +38,6 @@ void sem_post(sem_t *s)
     int v;
     v = s->sem_v;
     v++;
-    if(v > s->sem_f) v = s->sem_f;
     if (v <= 0) 
     {
         task_free_pos = s->sem_bloqued_queue.next_task_to_free;
