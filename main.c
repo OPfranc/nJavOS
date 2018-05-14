@@ -11,8 +11,8 @@
 #include "pipe.h"
 
 // Variáveis globais
-sem_t p;
-//pipe_t p;
+//sem_t p;
+pipe_t p;
 asm("GLOBAL _task_one, _task_two, _idle");
 
 void main(void) {
@@ -31,8 +31,8 @@ void main(void) {
     init_timer();
 
     
-    sem_init(&p, 1);
-    //pipe_create(&p);
+    //sem_init(&p, 1);
+    pipe_create(&p);
     
     // Cria as tarefas
     task_create(1, 1, task_one);

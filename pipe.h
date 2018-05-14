@@ -23,7 +23,7 @@ typedef struct pipe {
 
 void pipe_create(pipe_t * pipe);
 void pipe_read(pipe_t * pipe, char * msg);
-void pipe_write(pipe_t * pipe, char msg);
+u_int pipe_write(pipe_t * pipe, char msg);
 
 #endif	/* PIPE_H */
 

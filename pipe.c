@@ -69,8 +69,9 @@ void pipe_read(pipe_t * pipe, char * msg)
 
 /* A função recebe o endereço do pipe e a mensagem do pipe. */
 
-void pipe_write(pipe_t * pipe, char msg)
+u_int pipe_write(pipe_t * pipe, char msg)
 {
+    u_int flag = 0;
     DISABLE_GLOBAL_INTERRUPTS();
     
     /* Recebe o indice da função que tentou escrever algo no pipe */
@@ -88,6 +89,7 @@ void pipe_write(pipe_t * pipe, char msg)
         pipe->pipe_msg[pipe->write_pos] = msg;
         pipe->write_pos = (pipe->write_pos + 1) % PIPE_SIZE;
         pipe->pipe_count++;
+        flag = 1;
         // Verificar se tem alguém esperando msg no pipe.
         if (Queue.task_READY[pipe->pos_task_read].task_state == WAITING) 
         {
@@ -106,5 +108,6 @@ void pipe_write(pipe_t * pipe, char msg)
         Queue.task_READY[Queue.task_running].blocked++;
         dispatcher(WAITING);
     }
+    return flag;
     ENABLE_GLOBAL_INTERRUPTS();
 }
