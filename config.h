@@ -12,7 +12,6 @@
 
 // Configurações de usuário
 #define MAX_TASKS           5
-#define IDLE                MAX_TASKS
 
 #endif	/* CONFIG_H */
 

@@ -6,12 +6,13 @@
 #include <pic18f4520.h>
 #include <math.h>
 #include "tasks.h"
-#include "semaphore.h"
 #include "kernel.h"
 #include "pipe.h"
 
-//extern sem_t p;
 extern pipe_t p;
+extern sem_t s1;
+extern sem_t s2;
+
 void config_user()
 {
     TRISDbits.RD0 = 0;
@@ -33,15 +34,10 @@ TASK task_one()
 {
     while(1)
     {
-        /*
-        sem_wait(&p);
-        PORTDbits.RD0 = 1;
-        task_delay(100);
-        PORTDbits.RD0 = 0;
-        sem_post(&p);
-        */
-        char msg = 'A';
-        while(!pipe_write(&p, msg));
+        BCD(p.write.sem_v);
+        //sem_wait(&s1);
+        pipe_write(&p, 'A');
+        //sem_post(&s2);
         PORTDbits.RD0 = ~PORTDbits.RD0;
         task_delay(100);
     }
@@ -52,19 +48,13 @@ TASK task_two()
 {
     while(1)
     {
-        /*
-        sem_wait(&p);
-        PORTDbits.RD1 = 1;
-        task_delay(10);
-        PORTDbits.RD1 = 0;
-        sem_post(&p);
-        */
-        
+        BCD(p.read.sem_v);
+        //sem_wait(&s2);
         char msg;
         pipe_read(&p, &msg);
-        if(msg == 'A') PORTDbits.RD2 = ~PORTDbits.RD2;
+        //sem_post(&s1);
         PORTDbits.RD1 = ~PORTDbits.RD1;
-        task_delay(10);        
+        task_delay(1000);
     }
     return 0;
 }

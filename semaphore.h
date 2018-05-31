@@ -9,28 +9,16 @@
 #include "types.h"
 #include "config.h"
 
-/*
- * A estrutura de fila do semaforo conta com:
- * - tasks[] que é um vetor com o indice das tarefas bloqueadas pelo semaforo
- * - tasks_bloqued guarda o indice do final da fila
- * - next_task_to_free guarda o indice do inicio da fila
- */
 
 typedef struct sem_queue {
-    u_int tasks[MAX_TASKS];
-    u_int tasks_bloqued;
-    u_int next_task_to_free;
+    tcb_t * task;
+    struct sem_queue * next;
 } sem_queue_t;
-
-/*
- * A estrutura do semaforo é formada por:
- * - sem_v que é o valor de "lugares" disponíveis para o recurso
- * - sem_bloqued_queue é a fila de indices de tarefas bloqueadas
-*/
 
 typedef struct semaphore {
     int sem_v;
-    sem_queue_t sem_bloqued_queue;
+    sem_queue_t * sem_bloqued_queue_head;
+    sem_queue_t * sem_bloqued_queue_tail;
 } sem_t;
 
 void sem_init(sem_t *s, u_int s_valor);

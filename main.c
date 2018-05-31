@@ -7,34 +7,25 @@
 #include "tasks.h"
 #include "kernel.h"
 #include "config_timer.h"
-#include "semaphore.h"
 #include "pipe.h"
 
-// Variáveis globais
-//sem_t p;
-pipe_t p;
 asm("GLOBAL _task_one, _task_two, _idle");
 
-void main(void) {
+pipe_t p;
+sem_t s1;
+sem_t s2;
 
-    /* Faz as configurações iniciais do usuário como:
-     * - Seta as portas como entradas e saídas
-     * - Define as tarefas
-     */
-    
+void main(void) 
+{
+    SRAMInitHeap();
     config_user();
-
-    /* Inicializa o sitema operacional criando a fila de tarefas instaladas */
     OS_start();
-    
-    /* Inicializa o timer do PIC */
     init_timer();
-
     
-    //sem_init(&p, 1);
     pipe_create(&p);
+    sem_init(&s1, 4);
+    sem_init(&s2, 0);
     
-    // Cria as tarefas
     task_create(1, 1, task_one);
     task_create(2, 10, task_two);
 

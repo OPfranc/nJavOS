@@ -11,8 +11,8 @@
 
 #define QUANTUM 4
 
-u_int rr_scheduler();
-u_int priority_scheduler();
+void rr_scheduler();
+void priority_scheduler();
 
 #endif	/* SCHEDULER_H */
 

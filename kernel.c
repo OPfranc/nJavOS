@@ -9,13 +9,18 @@
 #include "types.h"
 #include "delay.h"
 
-/* Declaração da variavel global de fila */
+Queue_t * Queue;
 
-Queue_t Queue;
-
-/* Esta é uma tarefa que não faz nada, apena ocupa o processador enquanto
- * não houver tarefas para escalonar. 
- */
+void start_queue()
+{
+    Queue = SRAMalloc(sizeof(Queue_t));
+    Queue->head = NULL;
+    Queue->idle = NULL;
+    Queue->running = NULL;
+    Queue->tail = NULL;
+    Queue->tasks_installed = 0;
+    Queue->tasks_ready = 0;
+}
 
 TASK idle() {   
     while (1) 
@@ -25,97 +30,76 @@ TASK idle() {
     return 0;
 }
 
-/* Com a fila de tarefas instaladas já criada a função cria a tarefa IDLE
- * que fica na posição máxima da fila. Define a prioridade do IDLE para a menor
- * possível e o coloca como a tarefa executando. 
- */
-
 void OS_start()
 {
-    /*Define tarefas instaladas igual a 0*/
-    Queue.tasks_installed = 0;
+    start_queue();
     
-    /*Define a tarefa executando a tarefa IDLE*/
-    Queue.task_running = IDLE;
+    tcb_t * t;
+    t = SRAMalloc(sizeof(tcb_t));
     
-    /*Define as tarefas prontas como 0 */
-    Queue.tasks_ready = 0;
+    t->task_ID = 0;
+    t->task_prior = 99;
+    t->time_to_delay = 0;
+    t->blocked = 0;
+    t->task_exec = 0;
+    t->task_state = RUNNING;
+    t->task_ptr = idle;
+    t->task_stack.stack_size = 0;
+    t->task_stack.pointer = NULL;
+    t->task_stack.head = NULL;
+    t->task_stack.tail = NULL;
+    t->next = NULL;
     
-    /* Cria tarefa idle com o ID 0, a menor prioridade possivel, com o estado
-     * de pronta, a função idle e sem delay
-     */
-    
-    Queue.task_READY[IDLE].task_ID    = 0;
-    Queue.task_READY[IDLE].task_prior = 99;
-    Queue.task_READY[IDLE].task_state = READY;
-    Queue.task_READY[IDLE].task_ptr   = idle;
-    Queue.task_READY[IDLE].time_to_delay = 0;
+    Queue->idle = t;
+    Queue->running = t;
 }
-
-/* Esta função instala tarefas na fila de tarefas instaladas, ela 
- * recebe o ID da tarefa, a prioridade, e a função que a executa. 
- * A função instala no vetor de tarefas instaladas de forma sequencial,
- * como a fila começa com tasks_installed igual a 0, precisamos incrementar
- * essa variavel após o seu uso. Em caso de não estar habilitado o RR, 
- * ou seja, a prioridade está habilitada, ao criar a tarefa chamamos
- * o dispachante para verificar quem é a tarefa de maior prioridade. */
 
 void task_create(u_int id, u_int prior, task_ptr_t ptr_f)
 {
-    Queue.task_READY[Queue.tasks_installed].task_ID    = id;
-    Queue.task_READY[Queue.tasks_installed].task_prior = prior;
+    tcb_t * t;
+    t = SRAMalloc(sizeof(tcb_t));
     
-    /* Tempo de delay na tarefa */
-    Queue.task_READY[Queue.tasks_installed].time_to_delay = 0;  
-
-    /* Define a quantidade de bloqueios da tarefa */
-    Queue.task_READY[Queue.tasks_installed].blocked = 0;
-    Queue.task_READY[Queue.tasks_installed].task_state = READY;
-    Queue.task_READY[Queue.tasks_installed].task_ptr   = ptr_f;
-    Queue.task_READY[Queue.tasks_installed].task_stack.stack_size = 0;
-    /* Define se a tarefa já foi executada alguma vez */
-    Queue.task_READY[Queue.tasks_installed].task_exec = 0;
+    t->task_ID = id;
+    t->task_prior = prior;
+    t->time_to_delay = 0;
+    t->blocked = 0;
+    t->task_exec = 0;
+    t->task_state = READY;
+    t->task_ptr = ptr_f;
+    t->task_stack.stack_size = 0;
+    t->task_stack.pointer = NULL;
+    t->task_stack.head = NULL;
+    t->task_stack.tail = NULL;
     
-    /* Incrementa o numero de tarefas instaladas e o número de tarefas prontas */
-    Queue.tasks_installed++;
-    Queue.tasks_ready++;
+    if(Queue->head == NULL)
+    {
+        Queue->head = t;
+        Queue->tail = t;
+        Queue->tail->next = t;
+        Queue->idle->next = t;
+    } 
+    else
+    {
+        t->next = Queue->head;
+        Queue->tail->next = t;
+        Queue->tail = t;
+    }
+    Queue->tasks_installed++;
+    Queue->tasks_ready++;
     if(!RR_SCHEDULER) dispatcher(READY);
 }
 
-/* A função decrementa o número de tarefas prontas e chama o dispachante mudando
- * o estado da tarefa para finalizada.
- */
-
 void task_remove()
 {
-    Queue.tasks_ready--;
+    Queue->tasks_ready--;
     dispatcher(FINISHED);
 }
-
-/* Recebe a posição da tarefa no vetor de tarefas instaladas e puxa as tarefaas
- * posteriores uma posição antes removendo a tarefa apontada, ao final decrementa 
- * o número de tarefas instaladas. 
- */
-
-void organize_queue(u_int r)
-{
-    for(r; r < Queue.tasks_installed - 1; r++)
-    {
-        Queue.task_READY[r] = Queue.task_READY[r+1];
-    }
-    Queue.tasks_installed--;    
-}
-
-/* A função recebe o tempo t em milisegundo e atribui o tempo na TCB da tarefa
- * em execução, decrementa o número de tarefas prontas e então chama o 
- * dispachante alterando o estado da tarefa atual para espera.
- */
 
 void task_delay(u_int t)
 {
     DISABLE_GLOBAL_INTERRUPTS();
-    Queue.task_READY[Queue.task_running].time_to_delay = t;
-    Queue.tasks_ready--;
+    Queue->running->time_to_delay = t;
+    Queue->tasks_ready--;
     dispatcher(WAITING);
     ENABLE_GLOBAL_INTERRUPTS();
 }
@@ -125,41 +109,139 @@ void task_delay(u_int t)
  * a fila a fim de remover a tarefa atual da fila de instalados,
  */
 
-void dispatcher(state_t state)
+void create_stack()
 {
-    u_int t;
+    u_int p = STKPTR - 1;
     
-    /* Desabilita as interrupções */
+    stack_PIC18_t * cabeca;
+    cabeca = SRAMalloc(sizeof(stack_PIC18_t));
+    
+    cabeca->next = NULL;
+    cabeca->previous = NULL;
+    
+    Queue->running->task_stack.head = cabeca;
+    Queue->running->task_stack.tail = cabeca;
+    p--;
+    
+    while(p)
+    {   
+        stack_PIC18_t * s, * c;
+        s = SRAMalloc(sizeof(stack_PIC18_t));
+
+        c = Queue->running->task_stack.head;
+        
+        s->next = c;
+        s->previous = c->previous;
+        
+        c->previous = s;
+        Queue->running->task_stack.head = s;
+        p--;
+    }
+    Queue->running->task_stack.pointer = Queue->running->task_stack.head;
+}
+
+void destroy_stack(){
+    while(Queue->running->task_stack.head != NULL)
+    {
+        stack_PIC18_t * s;
+        s = Queue->running->task_stack.head;
+        Queue->running->task_stack.head = s->next;
+        SRAMfree(s);
+    }
+}
+
+void dispatcher(state_t state)
+{    
     DISABLE_GLOBAL_INTERRUPTS();
     
-    /* Altera o estado da tarefa que está em execução */
-    Queue.task_READY[Queue.task_running].task_state = state;
+    Queue->running->task_state = state;
 
-    /* Verifica se o estado da tarefa é finalizada */
-    if(state == FINISHED)
-    {
-        organize_queue(Queue.task_running);
-    } 
-    else  
-    {
-        /* Salva o contexto da tarefa em execução caso o estado não seja o finalizado */
-        SAVE_CONTEXT();
-    }
-    /* Caso o RR estaja habilitado ele escalona pelo RR caso contrario executa
-     * o escalonador por prioridade e guarda na variavel t. 
-     */
+    create_stack();
     
-    if(RR_SCHEDULER){ t = rr_scheduler(); } else { t = priority_scheduler(); }
+    SAVE_CONTEXT();
     
-    /* Atribui t a tarefa que está executando */
-    Queue.task_running = t;
+    if(RR_SCHEDULER)
+        rr_scheduler();
+    else
+        priority_scheduler();
     
-    /* Coloca o estado da função escolhida para executando */  
-    Queue.task_READY[Queue.task_running].task_state = RUNNING;
+    Queue->running->task_state = RUNNING;
     
-    /* Restaura o contexto da função escolhida */
     RESTORE_CONTEXT();
     
-    /* Habilita as interrupções */
+    destroy_stack();
+    
     ENABLE_GLOBAL_INTERRUPTS();
+}
+
+void BCD(int n)
+{
+    switch(n)
+    {
+        case 0:
+            PORTDbits.RD2 = 0;
+            PORTDbits.RD3 = 0;
+            PORTDbits.RD4 = 0;
+            PORTDbits.RD5 = 0;
+            break;
+        case 1:
+            PORTDbits.RD2 = 1;
+            PORTDbits.RD3 = 0;
+            PORTDbits.RD4 = 0;
+            PORTDbits.RD5 = 0;
+            break;
+        case 2:
+            PORTDbits.RD2 = 0;
+            PORTDbits.RD3 = 1;
+            PORTDbits.RD4 = 0;
+            PORTDbits.RD5 = 0;
+            break;
+        case 3:
+            PORTDbits.RD2 = 1;
+            PORTDbits.RD3 = 1;
+            PORTDbits.RD4 = 0;
+            PORTDbits.RD5 = 0;
+            break;
+        case 4:
+            PORTDbits.RD2 = 0;
+            PORTDbits.RD3 = 0;
+            PORTDbits.RD4 = 1;
+            PORTDbits.RD5 = 0;
+            break;
+        case 5:
+            PORTDbits.RD2 = 1;
+            PORTDbits.RD3 = 0;
+            PORTDbits.RD4 = 1;
+            PORTDbits.RD5 = 0;
+            break;
+        case 6:
+            PORTDbits.RD2 = 0;
+            PORTDbits.RD3 = 1;
+            PORTDbits.RD4 = 1;
+            PORTDbits.RD5 = 0;
+            break;
+        case 7:
+            PORTDbits.RD2 = 1;
+            PORTDbits.RD3 = 1;
+            PORTDbits.RD4 = 1;
+            PORTDbits.RD5 = 0;
+            break;
+        case 8:
+            PORTDbits.RD2 = 0;
+            PORTDbits.RD3 = 0;
+            PORTDbits.RD4 = 0;
+            PORTDbits.RD5 = 1;
+            break;
+        case 9:
+            PORTDbits.RD2 = 1;
+            PORTDbits.RD3 = 0;
+            PORTDbits.RD4 = 0;
+            PORTDbits.RD5 = 1;
+            break;
+        default:
+            PORTDbits.RD2 = 1;
+            PORTDbits.RD3 = 1;
+            PORTDbits.RD4 = 1;
+            PORTDbits.RD5 = 1;
+    }
 }
