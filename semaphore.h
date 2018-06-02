@@ -21,7 +21,7 @@ typedef struct semaphore {
     sem_queue_t * sem_bloqued_queue_tail;
 } sem_t;
 
-void sem_init(sem_t *s, u_int s_valor);
+sem_t * sem_init(u_int s_valor);
 void sem_wait(sem_t *s);
 void sem_post(sem_t *s);
 

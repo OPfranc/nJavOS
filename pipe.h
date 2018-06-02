@@ -22,11 +22,11 @@ typedef struct message {
 typedef struct pipe {
     message_t * head;
     message_t * tail;
-    sem_t read;
-    sem_t write;
+    sem_t * read;
+    sem_t * write;
 } pipe_t;
 
-void pipe_create(pipe_t * pipe);
+pipe_t * pipe_create();
 void pipe_read(pipe_t * pipe, char * msg);
 void pipe_write(pipe_t * pipe, char msg);
 

@@ -11,9 +11,7 @@
 
 asm("GLOBAL _task_one, _task_two, _idle");
 
-pipe_t p;
-sem_t s1;
-sem_t s2;
+pipe_t * p;
 
 void main(void) 
 {
@@ -21,11 +19,9 @@ void main(void)
     config_user();
     OS_start();
     init_timer();
-    
-    pipe_create(&p);
-    sem_init(&s1, 4);
-    sem_init(&s2, 0);
-    
+
+    p = pipe_create();
+
     task_create(1, 1, task_one);
     task_create(2, 10, task_two);
 

@@ -9,9 +9,7 @@
 #include "kernel.h"
 #include "pipe.h"
 
-extern pipe_t p;
-extern sem_t s1;
-extern sem_t s2;
+extern pipe_t * p;
 
 void config_user()
 {
@@ -34,11 +32,9 @@ TASK task_one()
 {
     while(1)
     {
-        BCD(p.write.sem_v);
-        //sem_wait(&s1);
-        pipe_write(&p, 'A');
-        //sem_post(&s2);
+        BCD(p->write->sem_v);
         PORTDbits.RD0 = ~PORTDbits.RD0;
+        pipe_write(p, 'a');
         task_delay(100);
     }
     return 0;
@@ -48,12 +44,10 @@ TASK task_two()
 {
     while(1)
     {
-        BCD(p.read.sem_v);
-        //sem_wait(&s2);
-        char msg;
-        pipe_read(&p, &msg);
-        //sem_post(&s1);
+        BCD(p->read->sem_v);
         PORTDbits.RD1 = ~PORTDbits.RD1;
+        char * msg;
+        pipe_read(p, msg);
         task_delay(1000);
     }
     return 0;

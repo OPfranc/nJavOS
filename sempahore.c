@@ -3,11 +3,14 @@
 
 extern Queue_t * Queue;
 
-void sem_init(sem_t *s, u_int s_valor)
+sem_t * sem_init(u_int s_valor)
 {
+    sem_t * s;
+    s = SRAMalloc(sizeof(sem_t));
     s->sem_v = s_valor;
     s->sem_bloqued_queue_head = NULL;
     s->sem_bloqued_queue_tail = NULL;
+    return s;
 }
 
 void sem_wait(sem_t *s)
@@ -44,8 +47,9 @@ void sem_wait(sem_t *s)
 void sem_post(sem_t *s)
 {
     DISABLE_GLOBAL_INTERRUPTS();
-    s->sem_v++;
-    if(s->sem_v <= 0){
+    int v = s->sem_v;
+    v++;
+    if(v <= 0){
         sem_queue_t * bloqued;
         bloqued = s->sem_bloqued_queue_head;
         if(bloqued->task->task_state == WAITING)
@@ -61,6 +65,7 @@ void sem_post(sem_t *s)
         s->sem_bloqued_queue_head = bloqued->next;
         SRAMfree(bloqued);
     }
+    s->sem_v = v;
     ENABLE_GLOBAL_INTERRUPTS();  
 }
 
