@@ -18,6 +18,7 @@ void main(void)
     SRAMInitHeap();
     config_user();
     OS_start();
+    init_uart();
     init_timer();
 
     p = pipe_create();

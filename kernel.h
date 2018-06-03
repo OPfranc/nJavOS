@@ -11,6 +11,7 @@
 #include <pic18f4520.h>
 #include <stdio.h>
 #include "sralloc.h"
+#include "uart.h"
 
 #define ENABLE_GLOBAL_INTERRUPTS() INTCONbits.GIE   = 1
 #define DISABLE_GLOBAL_INTERRUPTS() INTCONbits.GIE  = 0

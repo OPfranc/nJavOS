@@ -2,62 +2,88 @@
 #include "kernel.h"
 
 extern Queue_t * Queue;
-sem_t * temp_w, * temp_r;
 
 pipe_t * pipe_create()
 {
     pipe_t *pipe;
-    sem_t *w, *r;
     
     pipe = SRAMalloc(sizeof(pipe_t));
-   
-    w = sem_init(PIPE_SIZE);
-    r = sem_init(0);
     
+    pipe->count = PIPE_SIZE;       
     pipe->head = NULL;
     pipe->tail = NULL;
-    pipe->write = w;
-    pipe->read  = r;
+    pipe->blocked_task = NULL;    
     
     return pipe;
 }
 
-void pipe_write(pipe_t * pipe, char msg)
+void pipe_write(pipe_t * pipe, char msg[])
 {
-    temp_w = pipe->write;
-    temp_r = pipe->read;
-    
-    sem_wait(temp_w);
     DISABLE_GLOBAL_INTERRUPTS();
-    message_t * m, * t;
-    m = SRAMalloc(sizeof(message_t));
-    m->msg = msg;
-    m->next = NULL;
-    if(pipe->head == NULL){
-        pipe->head = m;
+    if(pipe->count > 0){
+        message_t * m, * t;
+        m = SRAMalloc(sizeof(message_t));
+        m->msg = msg;
+        m->next = NULL;
+        if(pipe->head == NULL){
+            pipe->head = m;
+        } else
+        {
+            t = pipe->tail;
+            t->next = m;
+        }
+        pipe->tail = m;
+        pipe->count--;
+        free_pipe(pipe);
     } else
     {
-        t = pipe->tail;
-        t->next = m;
+        block_pipe(pipe);
     }
-    pipe->tail = m;
     ENABLE_GLOBAL_INTERRUPTS();
-    sem_post(temp_r);
- 
 }
 
-void pipe_read(pipe_t * pipe, char * msg)
+void block_pipe(pipe_t * pipe)
 {
-    temp_w = pipe->write;
-    temp_r = pipe->read;
+    pipe->blocked_task = Queue->running;
+    Queue->running->blocked++;
+    Queue->tasks_ready--;
+    dispatcher(WAITING);
+}
 
-    sem_wait(temp_r);
+void free_pipe(pipe_t * pipe)
+{
+    if(pipe->blocked_task != NULL)
+    {
+        pipe->blocked_task->blocked--;
+        if(pipe->blocked_task->blocked <= 0 && pipe->blocked_task->time_to_delay <= 0)
+        {
+            Queue->tasks_ready++;
+            pipe->blocked_task->blocked = 0;
+            pipe->blocked_task->time_to_delay = 0;
+            pipe->blocked_task->task_state = READY;
+        }
+        pipe->blocked_task = NULL;
+    }
+}
+
+char * pipe_read(pipe_t * pipe)
+{
     DISABLE_GLOBAL_INTERRUPTS();
-    message_t * m;        
-    m = pipe->head;
-    pipe->head = m->next;
-    *msg = m->msg;
-    SRAMfree(m);
+    char * msg;
+    if(pipe->count == PIPE_SIZE)
+    {
+        block_pipe(pipe);
+    }
+    else
+    {
+        message_t * m;        
+        m = pipe->head;
+        pipe->head = m->next;
+        msg = m->msg;
+        SRAMfree(m);
+        pipe->count++;
+        free_pipe(pipe);
+    }
     ENABLE_GLOBAL_INTERRUPTS();
-    sem_post(temp_w);
+    return msg;
 }

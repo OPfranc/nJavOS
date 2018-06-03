@@ -15,20 +15,21 @@
 typedef char byte;
 
 typedef struct message {
-    char msg;
+    char * msg;
     struct message * next;
 } message_t;
 
 typedef struct pipe {
     message_t * head;
     message_t * tail;
-    sem_t * read;
-    sem_t * write;
+    tcb_t * blocked_task;;
+    int count;
 } pipe_t;
 
 pipe_t * pipe_create();
-void pipe_read(pipe_t * pipe, char * msg);
-void pipe_write(pipe_t * pipe, char msg);
-
+char * pipe_read(pipe_t * pipe);
+void pipe_write(pipe_t * pipe, char msg[]);
+void free_pipe(pipe_t * pipe);
+void block_pipe(pipe_t * pipe);
 #endif	/* PIPE_H */
 
