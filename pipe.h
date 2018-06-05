@@ -22,14 +22,12 @@ typedef struct message {
 typedef struct pipe {
     message_t * head;
     message_t * tail;
-    tcb_t * blocked_task;;
-    int count;
+    sem_t * write;
+    sem_t * read;
 } pipe_t;
 
 pipe_t * pipe_create();
 char * pipe_read(pipe_t * pipe);
 void pipe_write(pipe_t * pipe, char msg[]);
-void free_pipe(pipe_t * pipe);
-void block_pipe(pipe_t * pipe);
 #endif	/* PIPE_H */
 

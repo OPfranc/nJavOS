@@ -20,15 +20,18 @@ void config_user()
 
 TASK task_one()
 {
-    long int i = 0;
+    int i = 0;
     while(1)
     {
-        BCD(p->count);
-        char m[25];
-        sprintf(m, "Oi, mundo %d", i);
-        PORTDbits.RD0 = ~PORTDbits.RD0;
-        pipe_write(p, m);
-        task_delay(100);
+        if(i < 3){
+            char m[25];
+            sprintf(m, "Oi, mundo");
+            printf("W: %s", m);
+            PORTDbits.RD0 = ~PORTDbits.RD0;
+            pipe_write(p, m);
+            //task_delay(1);
+            i++;
+        }
     }
     return 0;
 }
@@ -40,8 +43,8 @@ TASK task_two()
         char * msg;
         PORTDbits.RD1 = ~PORTDbits.RD1;
         msg = pipe_read(p);
-        printf("%s", msg);
-        task_delay(1000);
+        printf("R: %s", msg);
+        task_delay(100);
     }
     return 0;
 }

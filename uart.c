@@ -1,10 +1,13 @@
 #include "uart.h"
+#include "kernel.h"
 
 void putch(char c)
 {
+    DISABLE_GLOBAL_INTERRUPTS();
     // wait the end of transmission
     while (TXSTAbits.TRMT == 0);
     TXREG = c; // send the new byte
+    ENABLE_GLOBAL_INTERRUPTS();
 }
 
 char read_char(void)
