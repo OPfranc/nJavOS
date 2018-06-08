@@ -7,27 +7,22 @@
 #define	PIPE_H
 
 #include "types.h"
-#include "semaphore.h"
 
-
-#define PIPE_SIZE   4
+#define PIPE_SIZE 4
 
 typedef char byte;
 
-typedef struct message {
-    char * msg;
-    struct message * next;
-} message_t;
-
 typedef struct pipe {
-    message_t * head;
-    message_t * tail;
-    sem_t * write;
-    sem_t * read;
+    byte pipe_msg[PIPE_SIZE];
+    u_int read_pos;
+    u_int write_pos;
+    tcb_t * task_read;
+    tcb_t * task_write;
+    int v;
 } pipe_t;
 
-pipe_t * pipe_create();
-char * pipe_read(pipe_t * pipe);
-void pipe_write(pipe_t * pipe, char msg[]);
+void pipe_create(pipe_t * pipe);
+void pipe_read(pipe_t * pipe, char * msg);
+void pipe_write(pipe_t * pipe, char msg);
 #endif	/* PIPE_H */
 

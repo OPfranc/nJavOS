@@ -11,7 +11,7 @@
 
 asm("GLOBAL _task_one, _task_two, _idle");
 
-pipe_t * p;
+pipe_t p;
 
 void main(void) 
 {
@@ -21,7 +21,7 @@ void main(void)
     init_uart();
     init_timer();
 
-    p = pipe_create();
+    pipe_create(&p);
 
     task_create(1, 1, task_one);
     task_create(2, 10, task_two);

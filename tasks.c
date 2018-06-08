@@ -10,28 +10,23 @@
 #include "pipe.h"
 #include <string.h>
 
-extern pipe_t * p;
+extern pipe_t p;
 
 void config_user()
 {
     TRISD = 0x0;
     PORTD = 0x0;
 }
-
+int i = 0;
 TASK task_one()
 {
-    int i = 0;
     while(1)
     {
-        if(i < 3){
-            char m[25];
-            sprintf(m, "Oi, mundo");
-            printf("W: %s", m);
-            PORTDbits.RD0 = ~PORTDbits.RD0;
-            pipe_write(p, m);
-            //task_delay(1);
-            i++;
-        }
+        char m = i + '0';
+        PORTDbits.RD0 = ~PORTDbits.RD0;
+        pipe_write(&p, m);
+        task_delay(100);
+        i++;
     }
     return 0;
 }
@@ -40,11 +35,11 @@ TASK task_two()
 {
     while(1)
     {
-        char * msg;
+        char msg;
         PORTDbits.RD1 = ~PORTDbits.RD1;
-        msg = pipe_read(p);
-        printf("R: %s", msg);
-        task_delay(100);
+        pipe_read(&p, &msg);
+        printf("R: %c", msg);
+        
     }
     return 0;
 }

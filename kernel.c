@@ -56,6 +56,7 @@ void OS_start()
 
 void task_create(u_int id, u_int prior, task_ptr_t ptr_f)
 {
+    DISABLE_GLOBAL_INTERRUPTS();
     tcb_t * t;
     t = SRAMalloc(sizeof(tcb_t));
     
@@ -86,6 +87,7 @@ void task_create(u_int id, u_int prior, task_ptr_t ptr_f)
     }
     Queue->tasks_installed++;
     Queue->tasks_ready++;
+    ENABLE_GLOBAL_INTERRUPTS();
     if(!RR_SCHEDULER) dispatcher(READY);
 }
 

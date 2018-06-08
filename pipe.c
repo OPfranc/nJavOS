@@ -3,55 +3,73 @@
 
 extern Queue_t * Queue;
 
-pipe_t * pipe_create()
+void pipe_create(pipe_t * pipe)
 {
-    pipe_t *pipe;
-    sem_t *w, *r;
-    
-    pipe = SRAMalloc(sizeof(pipe_t));
-    
-    w = sem_init(PIPE_SIZE);
-    r = sem_init(0);
-
-    pipe->head = NULL;
-    pipe->tail = NULL;
-    pipe->write = w;
-    pipe->read = r;
-    
-    return pipe;
+    pipe->task_read = NULL;    
+    pipe->task_write = NULL;    
+    pipe->read_pos = 0;
+    pipe->write_pos = 0;
+    pipe->v = 0;
 }
 
-void pipe_write(pipe_t * pipe, char msg[])
+void pipe_write(pipe_t * pipe, char msg)
 {
-    sem_wait(pipe->write);
     DISABLE_GLOBAL_INTERRUPTS();
-    message_t * m, * t;
-    m = SRAMalloc(sizeof(message_t));
-    m->msg = msg;
-    m->next = NULL;
-    if(pipe->head == NULL){
-        pipe->head = m;
-    } else
+    
+    if(pipe->task_write == NULL)
+        pipe->task_write = Queue->running;
+        
+    if (pipe->v < PIPE_SIZE) 
     {
-        t = pipe->tail;
-        t->next = m;
+        pipe->pipe_msg[pipe->write_pos] = msg;
+        pipe->write_pos = (pipe->write_pos + 1) % PIPE_SIZE;
+        pipe->v++;
+        if(pipe->task_read != NULL && pipe->task_read->task_state == WAITING) 
+        {
+            pipe->task_read->blocked--;
+            if(pipe->task_read->blocked <= 0 && pipe->task_read->time_to_delay <= 0)
+            {
+                Queue->tasks_ready++;
+                pipe->task_read->task_state = READY;
+            }
+        }
     }
-    pipe->tail = m;
-    sem_post(pipe->read);
+    else 
+    {
+        Queue->tasks_ready--;
+        Queue->running->blocked++;
+        dispatcher(WAITING);
+    }
     ENABLE_GLOBAL_INTERRUPTS();
 }
 
-char * pipe_read(pipe_t * pipe)
+void pipe_read(pipe_t * pipe, char * msg)
 {
-    sem_wait(pipe->read);
-    DISABLE_GLOBAL_INTERRUPTS();
-    char * msg;
-    message_t * m;        
-    m = pipe->head;
-    pipe->head = m->next;
-    msg = m->msg;
-    SRAMfree(m);
+    DISABLE_GLOBAL_INTERRUPTS();    
+    
+    if(pipe->task_read == NULL)
+        pipe->task_read = Queue->running;
+    
+    if (pipe->v > 0)
+    {
+        pipe->v--;
+        *msg = pipe->pipe_msg[pipe->read_pos];
+        pipe->read_pos = (pipe->read_pos + 1) % PIPE_SIZE;
+        if(pipe->task_write != NULL && pipe->task_write->task_state == WAITING) 
+        {
+            pipe->task_write->blocked--;
+            if(pipe->task_write->blocked <= 0 && pipe->task_write->time_to_delay <= 0)
+            {
+                Queue->tasks_ready++;
+                pipe->task_write->task_state = READY;
+            }
+        }
+    }
+    else 
+    {
+        Queue->tasks_ready--;
+        Queue->running->blocked++;
+        dispatcher(WAITING);
+    }
     ENABLE_GLOBAL_INTERRUPTS();
-    sem_post(pipe->write);
-    return msg;
 }

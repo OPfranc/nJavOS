@@ -10,6 +10,7 @@
 #include <xc.h>
 #include <pic18f4520.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "sralloc.h"
 #include "uart.h"
 
